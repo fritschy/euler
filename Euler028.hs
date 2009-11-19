@@ -8,3 +8,6 @@ spiral n = fourSteps 2 3 1
                    | otherwise      = num + fourSteps stepSize (stepsToGo-1) (num+stepSize)
 
 euler028 = spiral (1001*1001)
+
+-- alternative wrong ;)
+--euler028 = 1 + sum [4*n*n-6*n | n <- [3,5..1003]]
