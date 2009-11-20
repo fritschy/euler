@@ -14,12 +14,13 @@ echo
 echo import System
 echo
 echo main = do
-echo "       args <- getArgs"
+echo "       args' <- getArgs"
+echo "       let args = map read args'"
 for i in Euler*hs
 {
-  echo "       if null args || `printf %d ${${i:r}#Euler}` \`elem\` (map read args)"
+  echo "       if null args || `printf %d ${${i:r}#Euler}` \`elem\` args"
   echo "         then putStrLn \$ \"Problem ${i:r}: \" ++ show e${${i:r}#E}"
-  echo "         else putStrLn \"Problem ${i:r} is not selected by command line\""
+  echo "         else putStr \"\""
 }
 
 exec 1>&3 3>&-
