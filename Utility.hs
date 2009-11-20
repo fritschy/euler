@@ -1,5 +1,6 @@
 module Utility where
 
+import Data.Bits
 import Data.Char
 import Data.List
 
@@ -15,3 +16,7 @@ uniq (x:xs)
 -- sum the numbers from 1..n
 sumUpTo n = n * (n + 1) `div` 2
 --sumUpTo n = n + n * (n - 1) `div` 2
+
+showBinary x
+  | x > 0     = (if testBit x 0 then '1' else '0') : showBinary (x `div` 2)
+  | otherwise = []
