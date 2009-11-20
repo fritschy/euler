@@ -11,3 +11,7 @@ digitsOfNumber n = map (sub0 . ord) $ show n
 uniq (x:xs)
   | not (null xs) = if x == head xs then uniq xs else x : uniq xs
   | otherwise     = [x]
+
+-- sum the numbers from 1..n
+sumUpTo n = n * (n + 1) `div` 2
+--sumUpTo n = n + n * (n - 1) `div` 2
