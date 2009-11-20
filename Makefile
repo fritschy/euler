@@ -3,8 +3,8 @@ all: Main.hs
 
 main: Main.hs
 
-Main.hs: $(wildcard Euler*hs)
-	zsh make-main.sh
+Main.hs: MakeMain.hs $(wildcard Euler*hs)
+	runhaskell MakeMain.hs
 
 clean:
 	rm -f *.o *.hi Main Main.hs
