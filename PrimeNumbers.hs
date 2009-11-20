@@ -1,4 +1,9 @@
-module PrimeNumbers where
+module PrimeNumbers (
+  sieve,
+  isPrime,
+  primes,
+  primeFactors
+  ) where
 
 import Data.Bits
 

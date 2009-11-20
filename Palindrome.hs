@@ -1,4 +1,4 @@
-module Palindrome where
+module Palindrome (isNumberPalindrome, isPalindrome) where
 
 isNumberPalindrome :: Integral a => a -> Bool
 isNumberPalindrome n = isPalindrome $ show n
