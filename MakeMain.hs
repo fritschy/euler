@@ -20,7 +20,7 @@ main = do
           fileStrLn   "          let args = map read args'"
           -- call problem implementations
           fileStrLn . unlines . map (\(x,y) -> "          if null args || " ++ show x ++ " `elem` args\n" ++
-                                               "            then fileStrLn $ \"Problem " ++ y ++ ": \" ++ show e" ++ (tail y) ++ "\n" ++
+                                               "            then putStrLn $ \"Problem " ++ y ++ ": \" ++ show e" ++ (tail y) ++ "\n" ++
                                                "            else putStr \"\"\n") $ zip [1..(length modules)] modules
           putStrLn  $ mainFile ++ " generated, containing " ++ show (length modules) ++ " problems."
           where isEulerModule x = "sh" == ((take 2) . reverse) x && "Euler" == (take 5 x)
