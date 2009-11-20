@@ -24,3 +24,4 @@ for i in Euler*hs
 }
 
 exec 1>&3 3>&-
+echo "Main.hs generated containing `ls Euler*hs|wc -w` problems"
