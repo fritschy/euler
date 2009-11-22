@@ -13,7 +13,7 @@ sieve = [x | x <- [2..], null [y | y <- [2..truncate . sqrt $ fromIntegral x], x
 isPrime :: Integral a => a -> Bool
 isPrime n
   | n == 2    = True
-  | n >  6    = null [x | x <- [2 .. max], 0 == mod n x]
+  | n >  2    = null [x | x <- [2 .. max], 0 == mod n x]
   | otherwise = False
                 where max = truncate (1 + sqrt (fromIntegral n))
 
