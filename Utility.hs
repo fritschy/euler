@@ -3,13 +3,23 @@ module Utility (
   uniq,
   sumUpTo,
   showBinary,
-  showLiteralNumber
+  showLiteralNumber,
+  divisors
   ) where
 
 import Data.Bits
 import Data.Char
 import Data.List
 import Array
+
+-- proper divisors of n
+divisors n
+  | n <  0    = error $ "Invalid argument to 'divisors': " ++ show n
+  | otherwise = 1 : divs n 2
+                where divs n d
+                        | n `mod` d == 0 = d : divs n (d+1)
+                        | d > n `div` 2  = []
+                        | otherwise      = divs n (d+1)
 
 digitsOfNumber n = map (sub0 . ord) $ show n
                    where sub0 n = n - 0x30
