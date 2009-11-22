@@ -1,6 +1,5 @@
 module Euler027 where
 import PrimeNumbers
-euler027 = "Not yet solved..."
---euler027 = map showIt candidates
-           where candidates = [(a,b) | a <- [-999..999], b <- [-999..999], (max a b) - 1 == length [n | n <- [0..(max a b)-1], n*n+a*n+b > 0 && isPrime (n*n+a*n+b)]]
-                 showIt (a, b) = "n^2  +  " ++ show a ++ " * n  +  " ++ show b
+euler027 = maximum . map (length . snd) . filter ((> 0) . length . snd) $ map primes candidates
+           where candidates = [(a,b) | a <- [-999..999], b <- [-999..999]]
+                 primes = \(a,b) -> ((a,b), takeWhile isPrime [n*n+a*n+b | n <- [0..]])
