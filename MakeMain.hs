@@ -16,13 +16,12 @@ main = do
           -- imports
           fileStrLn . unlines $ map ("import " ++) modules
           fileStrLn   "import System\n"
-          fileStrLn   "main = do"
-          fileStrLn   "          args' <- getArgs"
-          fileStrLn   "          let args = map read args'"
+          fileStrLn   "main = do args' <- getArgs"
+          fileStrLn   "          let args = map read args'\n"
           -- call problem implementations
-          fileStrLn . unlines . map (\(x,y) -> "          if null args || " ++ show x ++ " `elem` args\n" ++
-                                               "            then putStrLn $ \"Problem " ++ y ++ ": \" ++ show e" ++ (tail y) ++ "\n" ++
-                                               "            else putStr \"\"\n") $ zip [1..(length modules)] modules
+          fileStrLn . unlines $ map (\x -> "          if null args || " ++ (drop 5 x) ++ " `elem` args\n" ++
+                                           "            then putStrLn $ \"Problem " ++ x ++ ": \" ++ show e" ++ (tail x) ++ "\n" ++
+                                           "            else putStr \"\"\n") modules
           putStrLn  $ mainFile ++ " generated, containing " ++ show (length modules) ++ " problems."
           where isEulerModule x = "sh" == ((take 2) . reverse) x && "Euler" == (take 5 x)
                 baseName = takeWhile (/= '.')
