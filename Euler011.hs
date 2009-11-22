@@ -1,12 +1,12 @@
 module Euler011 where
 import Data.List
-euler011 = maximum (map oneRow d ++ (map oneRow $ transpose d) ++ (diagonals d) ++ (diagonals $ reverse $ map reverse d))
-           where oneRow x
-                   | 4 <= length x = max (product $ take 4 x) (oneRow (tail x))
-                   | otherwise     = 0
-                 diagonals d       = [diag x y | x <- [0..16], y <- [0..16]]
-                 diag x y          = product [e (x+a) (y+a) | a <- [0..3]]
-                 e x y             = (d!!y)!!x
+euler011 = maximum $ rows ++ diags
+           where rows = map maximum . map (map product) $ map oneRow d ++ map oneRow (transpose d)
+                 diags = map product $ diagonals d ++ (diagonals $ reverse d)
+                 oneRow x
+                   | 4 <= length x  = (take 4 x) : (oneRow (tail x))
+                   | otherwise      = []
+                 diagonals d        = [[(d!!(y+a))!!(x+a) | a <- [0..3]] | x <- [0..16], y <- [0..16]]
                  d = [
                    [08,02,22,97,38,15,00,40,00,75,04,05,07,78,52,12,50,77,91,08],
                    [49,49,99,40,17,81,18,57,60,87,17,40,98,43,69,48,04,56,62,00],
