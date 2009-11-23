@@ -1,6 +1,6 @@
 module Euler013 where
-
-euler013 = 10^9 * sumn `div` 10 ^ (truncate . logBase 10 $ fromInteger sumn)
+import Utility
+euler013 = putNum (10^9 * sumn `div` 10 ^ (truncate . logBase 10 $ fromInteger sumn))
            where sumn = sum numbers
                  numbers = [37107287533902102798797998220837590246510135740250,
                    46376937677490009712648124896970078050417018260538,

@@ -1,3 +1,4 @@
 module Euler007 where
 import PrimeNumbers
-euler007 = primes!!10000
+import Utility
+euler007 = putNum (primes!!10000)

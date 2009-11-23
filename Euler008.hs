@@ -1,6 +1,7 @@
 module Euler008 where
 import Data.Char
-euler008 = maximum $ e8 nums
+import Utility
+euler008 = putNum . maximum $ e8 nums
            where e8 n
                    | length n >= 5 = product (take 5 n) : (e8 $ tail n)
                    | otherwise     = []

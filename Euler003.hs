@@ -1,3 +1,4 @@
 module Euler003 where
 import PrimeNumbers
-euler003 = maximum $ primeFactors 600851475143
+import Utility
+euler003 = putNum . maximum $ primeFactors 600851475143

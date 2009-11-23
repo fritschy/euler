@@ -1,6 +1,7 @@
 module Euler018 where
 import Debug.Trace
-euler018 = sum $ findPath triangle 0
+import Utility
+euler018 = putNum . sum $ findPath triangle 0
            where findPath (l:ls) index
                    | null ls      = [l!!index]
                    | otherwise    = (l!!index) : if (findPathN ls index 1) < (findPathN ls (index+1) 1)

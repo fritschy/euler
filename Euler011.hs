@@ -1,6 +1,7 @@
 module Euler011 where
 import Data.List
-euler011 = maximum $ rows ++ diags
+import Utility
+euler011 = putNum . maximum $ rows ++ diags
            where rows = map maximum . map (map product) $ map oneRow d ++ map oneRow (transpose d)
                  diags = map product $ diagonals d ++ (diagonals $ reverse d)
                  oneRow x
