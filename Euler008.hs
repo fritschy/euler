@@ -1,12 +1,10 @@
 module Euler008 where
 import Data.Char
-import Debug.Trace
 euler008 = maximum $ e8 nums
            where e8 n
-                   | length n >= 5 = product five : (e8 $ tail n)
+                   | length n >= 5 = product (take 5 n) : (e8 $ tail n)
                    | otherwise     = []
-                      where five = take 5 n
-                 nums = map sub $ map ord nums'
+                 nums = map (sub . ord) nums'
                  sub x = x - 0x30
                  nums' = "73167176531330624919225119674426574742355349194934" ++
                          "96983520312774506326239578318016984801869478851843" ++

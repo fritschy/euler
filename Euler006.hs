@@ -1,3 +1,3 @@
 module Euler006 where
-
-euler006 = (sum [1..100])^2 - (sum $ map (^2) [1..100])
+import Utility
+euler006 = (sumUpTo 100)^2 - (sum $ map (^2) [1..100])
