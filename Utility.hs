@@ -8,7 +8,7 @@ module Utility (
   divisors,                                  -- Integral a => a -> [a]
   classify,                                  -- Integral a => a -> IntegralClass
   putNum,                                    -- Num a => a -> IO ()
-  IntegralClass(Deficient,Perfect,Abundant)  --
+  IntegralClass(..)
   ) where
 
 import Data.Bits
@@ -32,7 +32,7 @@ classify n = clasS (sum $ divisors n) n
 -- proper divisors of n
 divisors :: Integral a => a -> [a]
 divisors n
-  | n <  0    = error $ "Invalid argument to 'divisors': " ++ show n
+  | n <  0    = error $ "Invalid argument to divisors: " ++ show n
   | otherwise = 1 : divs n 2
                 where divs n d
                         | n `mod` d == 0 = d : divs n (d+1)
@@ -40,7 +40,9 @@ divisors n
                         | otherwise      = divs n (d+1)
 
 digitsOfNumber :: Integral a => a -> [Int]
-digitsOfNumber n = map (sub0 . ord) $ show n
+digitsOfNumber n
+  | n >= 0       = map (sub0 . ord) $ show n
+  | otherwise    = error $ "Invalid argument to digitsOfNumber: " ++ show n
                    where sub0 n = n - 0x30
 
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
@@ -94,4 +96,4 @@ showLiteralNumber n
   | n >=   10 && n <=   19 = (teens ((head digits)*10 + (head $ tail digits))) ++ showLiteralNumber (next 2)
   | n >=    1 && n <=    9 = (oneToNine (head digits)) ++ showLiteralNumber (next 1)
                              where digits = digitsOfNumber n
-                                   next x = read . ("0" ++) . concat . map show . (if x == 2 then tail else id) $ tail digits
+                                   next x = read . ('0':) . concat . map show . (if x == 2 then tail else id) $ tail digits
