@@ -46,6 +46,7 @@ digitsOfNumber n = map (sub0 . ord) $ show n
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
 -- list is sorted beforehand
 uniq :: Eq a => [a] -> [a]
+uniq [] = []
 uniq (x:xs)
   | not (null xs) = if x == head xs then uniq xs else x : uniq xs
   | otherwise     = [x]
