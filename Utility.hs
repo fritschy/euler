@@ -4,7 +4,9 @@ module Utility (
   sumUpTo,
   showBinary,
   showLiteralNumber,
-  divisors
+  divisors,
+  classify,
+  IntegralClass(Deficient,Perfect,Abundant)
   ) where
 
 import Data.Bits
@@ -12,7 +14,18 @@ import Data.Char
 import Data.List
 import Array
 
+data IntegralClass = Deficient | Perfect | Abundant
+     deriving (Eq)
+
+classify :: Integral a => a -> IntegralClass
+classify n = clasS (sum $ divisors n) n
+             where clasS s n
+                     | s == n = Perfect
+                     | s <  n = Deficient
+                     | s >  n = Abundant
+
 -- proper divisors of n
+divisors :: Integral a => a -> [a]
 divisors n
   | n <  0    = error $ "Invalid argument to 'divisors': " ++ show n
   | otherwise = 1 : divs n 2
