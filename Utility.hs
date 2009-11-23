@@ -11,7 +11,6 @@ module Utility (
   IntegralClass(..)
   ) where
 
-import Data.Bits
 import Data.Char
 import Data.List
 import Array
