@@ -1,10 +1,12 @@
 module Euler022 where
 
-import System.IO
+import Data.Char
+import Utility
 
-getNames = do names' <- readFile "data/names.txt"
-              putStrLn . unlines $ lines names'
-              return (lines names')
-
-euler022 = putStr "False"
-
+euler022 = do names' <- readFile "data/names.txt"
+              let names = zip [1..] $ map (init . tail) $ splitNames names'
+              putNum . sum $ map val names
+              where val (i, n) = i * (sum $ map (\x -> (ord x) - (1 + ord 'A')) n)
+                    splitNames [] = []
+                    splitNames xs = name : splitNames (drop (1 + length name) xs)
+                                    where name = takeWhile (/= ',') xs
