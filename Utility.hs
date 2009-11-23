@@ -33,7 +33,7 @@ classify n = clasS (sum $ divisors n) n
 divisors :: Integral a => a -> [a]
 divisors n
   | n <  0    = error $ "Invalid argument to 'divisors': " ++ show n
-  | otherwise = 1 : divs n 2 ++ [n]
+  | otherwise = 1 : divs n 2
                 where divs n d
                         | n `mod` d == 0 = d : divs n (d+1)
                         | d > n `div` 2  = []
