@@ -1,18 +1,23 @@
 module Utility (
-  digitsOfNumber,
-  uniq,
-  sumUpTo,
-  showBinary,
-  showLiteralNumber,
-  divisors,
-  classify,
-  IntegralClass(Deficient,Perfect,Abundant)
+  digitsOfNumber,                            -- Integral a => a -> [Int]
+  uniq,                                      -- Eq a => [a] -> [a]
+  sortUniq,                                  -- Ord a => [a] -> [a]
+  sumUpTo,                                   -- Integral a => a -> a
+  showBinary,                                -- Integral a => a -> String
+  showLiteralNumber,                         -- Integral a => a -> String
+  divisors,                                  -- Integral a => a -> [a]
+  classify,                                  -- Integral a => a -> IntegralClass
+  putNum,                                    -- Num a => a -> IO ()
+  IntegralClass(Deficient,Perfect,Abundant)  --
   ) where
 
 import Data.Bits
 import Data.Char
 import Data.List
 import Array
+
+putNum :: Num a => a -> IO ()
+putNum = putStr . show
 
 data IntegralClass = Deficient | Perfect | Abundant
      deriving (Eq)
@@ -28,30 +33,36 @@ classify n = clasS (sum $ divisors n) n
 divisors :: Integral a => a -> [a]
 divisors n
   | n <  0    = error $ "Invalid argument to 'divisors': " ++ show n
-  | otherwise = 1 : divs n 2
+  | otherwise = 1 : divs n 2 ++ [n]
                 where divs n d
                         | n `mod` d == 0 = d : divs n (d+1)
                         | d > n `div` 2  = []
                         | otherwise      = divs n (d+1)
 
+digitsOfNumber :: Integral a => a -> [Int]
 digitsOfNumber n = map (sub0 . ord) $ show n
                    where sub0 n = n - 0x30
 
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
 -- list is sorted beforehand
+uniq :: Eq a => [a] -> [a]
 uniq (x:xs)
   | not (null xs) = if x == head xs then uniq xs else x : uniq xs
   | otherwise     = [x]
 
+sortUniq :: Ord a => [a] -> [a]
+sortUniq = uniq . sort
+
 -- sum the numbers from 1..n
+sumUpTo :: Integral a => a -> a
 sumUpTo n = n * (n + 1) `div` 2
 --sumUpTo n = n + n * (n - 1) `div` 2
 
+showBinary :: Integral a => a -> String
 showBinary x
-  | x > 0     = (if testBit x 0 then '1' else '0') : showBinary (x `div` 2)
+  | x > 0     = (if x `mod` 2 == 1 then '1' else '0') : showBinary (x `div` 2)
   | otherwise = []
 
--- helpers for solving euler017
 oneToNine :: Int -> String
 oneToNine n
   | n >= 1 && n <= 9 = chars!(n-1)
@@ -73,6 +84,7 @@ teens n
                          where chars = array (0,9) [(0, "ten"), (1, "eleven"), (2, "twelve"), (3, "thirteen"), (4, "fourteen"),
                                                     (5, "fifteen"), (6, "sixteen"), (7, "seventeen"), (8, "eighteen"), (9, "nineteen")]
 
+showLiteralNumber :: Integral a => a -> String
 showLiteralNumber n
   | n == 0                 = []
   | n >= 1000 && n <= 9999 = ((oneToNine (head digits)) ++ " thousand ") ++ showLiteralNumber (next 1)
