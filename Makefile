@@ -1,5 +1,5 @@
 all: Main.hs
-	ghc -O3 --make Main.hs
+	ghc -O3 -threaded --make Main.hs
 
 main: Main.hs
 
