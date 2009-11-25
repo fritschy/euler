@@ -1,3 +1,3 @@
 module Euler005 where
 import Utility
-euler005 = putNum $ foldl lcm 1 [2..20]
+euler005 = putNum $ foldl1 lcm [2..20]

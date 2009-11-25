@@ -57,10 +57,7 @@ divisors n
                         | otherwise      = divs n (d+1)
 
 digitsOfNumber :: Integral a => a -> [Int]
-digitsOfNumber n
-  | n >= 0       = map (sub0 . ord) $ show n
-  | otherwise    = error $ "Invalid argument to digitsOfNumber: " ++ show n
-                   where sub0 n = n - 0x30
+digitsOfNumber = map digitToInt . show
 
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
 -- list is sorted beforehand
