@@ -1,8 +1,8 @@
 module PrimeNumbers (
-  sieve,
-  isPrime,
-  primes,
-  primeFactors
+  sieve,                -- Integral a => [a]
+  isPrime,              -- Integral a => a -> Bool
+  primes,               -- Integral a => [a]
+  primeFactors          -- Integral a => a -> [a]
   ) where
 
 import Data.Bits
