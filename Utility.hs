@@ -1,19 +1,30 @@
 module Utility (
-  digitsOfNumber,                            -- Integral a => a -> [Int]
-  uniq,                                      -- Eq a => [a] -> [a]
-  sortUniq,                                  -- Ord a => [a] -> [a]
-  sumUpTo,                                   -- Integral a => a -> a
-  showBinary,                                -- Integral a => a -> String
-  showLiteralNumber,                         -- Integral a => a -> String
-  divisors,                                  -- Integral a => a -> [a]
-  classify,                                  -- Integral a => a -> IntegralClass
-  putNum,                                    -- Num a => a -> IO ()
+  digitsOfNumber,       -- Integral a => a -> [Int]
+  uniq,                 -- Eq a => [a] -> [a]
+  sortUniq,             -- Ord a => [a] -> [a]
+  sumUpTo,              -- Integral a => a -> a
+  showBinary,           -- Integral a => a -> String
+  showLiteralNumber,    -- Integral a => a -> String
+  divisors,             -- Integral a => a -> [a]
+  classify,             -- Integral a => a -> IntegralClass
+  putNum,               -- Num a => a -> IO ()
+  getWords,             -- String -> IO [String]
+  wordSum,              -- Integral a => [Char] -> a
   IntegralClass(..)
   ) where
 
 import Data.Char
 import Data.List
 import Array
+
+wordSum = sum . map ((1 +) . ((- ord 'A') +) . ord)
+
+getWords :: String -> IO [String]
+getWords file = do words' <- readFile file
+                   return . map (init . tail) $ splitWords words'
+                   where splitWords [] = []
+                         splitWords xs = word : splitWords (drop (1 + length word) xs)
+                                         where word = takeWhile (/= ',') xs
 
 putNum :: Num a => a -> IO ()
 putNum = putStr . show
