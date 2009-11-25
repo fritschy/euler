@@ -9,7 +9,9 @@ module Utility (
   classify,             -- Integral a => a -> IntegralClass
   putNum,               -- Num a => a -> IO ()
   getWords,             -- String -> IO [String]
-  wordSum,              -- Integral a => [Char] -> a
+  wordSum,              -- (String -> Int)
+  notSolved,            -- IO ()
+  notRunnable,          -- IO ()
   IntegralClass(..)
   ) where
 
@@ -17,6 +19,11 @@ import Data.Char
 import Data.List
 import Array
 
+notSolved, notRunnable :: IO ()
+notSolved = putStr "This problem is not solved yet."
+notRunnable = putStr "This problem solution is not runnable."
+
+wordSum :: String -> Int
 wordSum = sum . map ((1 +) . ((- ord 'A') +) . ord)
 
 getWords :: String -> IO [String]
