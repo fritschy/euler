@@ -18,6 +18,7 @@ module Utility (
 import Data.Char
 import Data.List
 import Array
+import qualified Data.Set as Set
 
 notSolved, notRunnable :: IO ()
 notSolved = putStr "This problem is not solved yet."
@@ -49,15 +50,9 @@ classify n = clasS (sum $ divisors n) n
 -- proper divisors of n
 divisors :: Integral a => a -> [a]
 divisors n
-  | n <  0    = error $ "Invalid argument to divisors: " ++ show n
-  | otherwise = 1 : divs n 2
-                where divs n d
-                        | n `mod` d == 0 = d : divs n (d+1)
-                        | d > n `div` 2  = []
-                        | otherwise      = divs n (d+1)
+  | n < 1     = error $ "Invalid argument to divisors2: " ++ show n
+  | otherwise = divs (Set.fromList [1]) n 2
 
--- Improve the algorithm:
---
 -- http://www.math.mtu.edu/mathlab/COURSES/holt/dnt/divis2.html
 --
 -- One way to improve upon the above procedure is by applying the
@@ -66,6 +61,10 @@ divisors n
 -- into pairs of the form (m, n/m), where m < n/m. The one exception to
 -- this is if n is a perfect square and m = sqrt(n), in which case m =
 -- n/m. For example, if n = 100, then the positive divisors of n are given by
+divs d n m
+  | m*m > n          = Set.toList d
+  | n `mod` m == 0   = divs (Set.insert m (if m*m == n then d else Set.insert (n`div`m) d)) n (m+1)
+  | otherwise        = divs d n (m+1)
 
 digitsOfNumber :: Integral a => a -> [Int]
 digitsOfNumber = map digitToInt . show
