@@ -12,16 +12,18 @@ sieve = [x | x <- [2..], null [y | y <- [2..truncate . sqrt $ fromIntegral x], x
 
 isPrime :: Integral a => a -> Bool
 isPrime n
-  | n == 2    = True
-  | n >  2    = null [x | x <- [2 .. max], 0 == mod n x]
-  | otherwise = False
-                where max = truncate (1 + sqrt (fromIntegral n))
+  | n == 2         = True
+  | n `mod` 2 == 0 = False
+  | n >  2         = null [x | x <- [3,5 .. max], 0 == mod n x]
+  | otherwise      = False
+                     where max = 1 + truncate (sqrt (fromIntegral n))
 
 primes :: Integral a => [a]
-primes = [x | x <- 2:[3,5..], isPrime x]
+primes = 2:[x | x <- [3,5..], isP x]
+         where isP n = null [x | x <- [3,5 .. 1 + truncate (sqrt (fromIntegral n))], 0 == mod n x]
 
 primeFactors :: Integral a => a -> [a]
 primeFactors n
   | n == 1    = []
   | otherwise = p : primeFactors (div n p)
-                where p = head [x | x <- primes, 0 == mod n x]
+                where p = head [x | x <- (takeWhile (\x->x*x <= n) primes) ++ [n], 0 == mod n x]

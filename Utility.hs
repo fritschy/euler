@@ -58,6 +58,8 @@ divisors n
 
 -- Improve the algorithm:
 --
+-- http://www.math.mtu.edu/mathlab/COURSES/holt/dnt/divis2.html
+--
 -- One way to improve upon the above procedure is by applying the
 -- following observation: if m is a divisor of n, then k = n/m is also a
 -- divisor of n, because mk = n. Thus, the positive divisors can be organized
