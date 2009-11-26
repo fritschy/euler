@@ -56,6 +56,15 @@ divisors n
                         | d > n `div` 2  = []
                         | otherwise      = divs n (d+1)
 
+-- Improve the algorithm:
+--
+-- One way to improve upon the above procedure is by applying the
+-- following observation: if m is a divisor of n, then k = n/m is also a
+-- divisor of n, because mk = n. Thus, the positive divisors can be organized
+-- into pairs of the form (m, n/m), where m < n/m. The one exception to
+-- this is if n is a perfect square and m = sqrt(n), in which case m =
+-- n/m. For example, if n = 100, then the positive divisors of n are given by
+
 digitsOfNumber :: Integral a => a -> [Int]
 digitsOfNumber = map digitToInt . show
 
