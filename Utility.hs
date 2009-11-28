@@ -47,24 +47,33 @@ classify n = clasS (sum $ divisors n) n
                      | s <  n = Deficient
                      | s >  n = Abundant
 
--- proper divisors of n
-divisors :: Integral a => a -> [a]
-divisors n
-  | n < 1     = error $ "Invalid argument to divisors2: " ++ show n
-  | otherwise = divs (Set.fromList [1]) n 2
+----- proper divisors of n
+---divisors :: Integral a => a -> [a]
+---divisors2 n
+---  | n < 1     = error $ "Invalid argument to divisors2: " ++ show n
+---  | otherwise = divs (Set.fromList [1]) n 2
+---
+----- http://www.math.mtu.edu/mathlab/COURSES/holt/dnt/divis2.html
+-----
+----- One way to improve upon the above procedure is by applying the
+----- following observation: if m is a divisor of n, then k = n/m is also a
+----- divisor of n, because mk = n. Thus, the positive divisors can be organized
+----- into pairs of the form (m, n/m), where m < n/m. The one exception to
+----- this is if n is a perfect square and m = sqrt(n), in which case m =
+----- n/m. For example, if n = 100, then the positive divisors of n are given by
+---divs d n m
+---  | m*m > n          = Set.toList d
+---  | n `mod` m == 0   = divs (Set.insert m (if m*m == n then d else Set.insert (n`div`m) d)) n (m+1)
+---  | otherwise        = divs d n (m+1)
 
--- http://www.math.mtu.edu/mathlab/COURSES/holt/dnt/divis2.html
---
--- One way to improve upon the above procedure is by applying the
--- following observation: if m is a divisor of n, then k = n/m is also a
--- divisor of n, because mk = n. Thus, the positive divisors can be organized
--- into pairs of the form (m, n/m), where m < n/m. The one exception to
--- this is if n is a perfect square and m = sqrt(n), in which case m =
--- n/m. For example, if n = 100, then the positive divisors of n are given by
-divs d n m
-  | m*m > n          = Set.toList d
-  | n `mod` m == 0   = divs (Set.insert m (if m*m == n then d else Set.insert (n`div`m) d)) n (m+1)
-  | otherwise        = divs d n (m+1)
+divisors n = (fst pairs) ++ (sort . wosqr $ snd pairs)
+             where pairs = unzip pairs'
+                   wosqr = if (last $ fst pairs) == (last $ snd pairs)
+                             then init
+                             else id
+                   pairs' = [(m, dim) |
+                              (m,(dim,mom)) <- zip [1..] $ map (divMod n)
+                                [1..truncate(sqrt(fromIntegral n))], 0==mom]
 
 digitsOfNumber :: Integral a => a -> [Int]
 digitsOfNumber = map digitToInt . show
