@@ -1,5 +1,8 @@
 all: Main.hs
-	ghc -O3 -threaded --make Main.hs
+	ghc -O -optc-march=native -optc-O3 -threaded --make Main.hs
+
+prof: Main.hs
+	ghc -O -prof -auto-all -optc-march=native -optc-O3 -threaded --make Main.hs
 
 main: Main.hs
 
