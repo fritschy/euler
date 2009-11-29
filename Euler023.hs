@@ -1,8 +1,7 @@
 module Euler023 where
 import Utility
 import Data.Set hiding (filter, null)
-euler023 = notSolved --putStr . show $ filter findSum [1..20161]
-           where abundants' = takeWhile (<= 20162) $ filter ((== Abundant) . classify) numbers
-                 abundants  = fromList abundants'
-                 numbers    = [3..20161]
-                 findSum r  = null [a | a <- abundants', (r - a) `member` abundants]
+euler023 = putStr . show $ filter findSum [1..20161]
+abundants' = takeWhile (<= 20162) $ filter ((== Abundant) . classify) [1..20161]
+abundants  = fromList abundants'
+findSum r  = null [a | a <- abundants', (r - a) `member` abundants]
