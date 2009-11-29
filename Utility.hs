@@ -6,6 +6,7 @@ module Utility (
   showBinary,           -- Integral a => a -> String
   showLiteralNumber,    -- Integral a => a -> String
   divisors,             -- Integral a => a -> [a]
+  properDivisors,       -- Integral a => a -> [a]
   classify,             -- Integral a => a -> IntegralClass
   putNum,               -- Num a => a -> IO ()
   getWords,             -- String -> IO [String]
@@ -41,7 +42,7 @@ data IntegralClass = Deficient | Perfect | Abundant
      deriving (Eq)
 
 classify :: Integral a => a -> IntegralClass
-classify n = clasS (sum $ divisors n) n
+classify n = clasS (sum $ properDivisors n) n
              where clasS s n
                      | s == n = Perfect
                      | s <  n = Deficient
@@ -66,6 +67,8 @@ classify n = clasS (sum $ divisors n) n
 ---  | n `mod` m == 0   = divs (Set.insert m (if m*m == n then d else Set.insert (n`div`m) d)) n (m+1)
 ---  | otherwise        = divs d n (m+1)
 
+divisors, properDivisors :: Integral a => a -> [a]
+properDivisors = init . divisors
 divisors n = (fst pairs) ++ (sort . wosqr $ snd pairs)
              where pairs = unzip pairs'
                    wosqr = if (last $ fst pairs) == (last $ snd pairs)
