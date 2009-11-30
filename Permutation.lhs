@@ -67,6 +67,16 @@ in combinatorics.
 > rev (a, b) = (b, a)
 > cat (a, b) = reverse $ a ++ b
 
+Implementation notes:
+
+The code is based on the description above, however, as lists can be inefficient
+When handled poorly, the sequence is reversed before we start processing.
+Only the final step does restire the correct order - note too, that function rev
+only switches a and b, such that they can be concatenated as "expected".
+
+Still, that monster takes >80 seconds for the 1e6 permutation of a 10-len
+sequence - which is too long.
+
 >-- let p = permutations in and $ map (\x->x == sort x) [p [1..x] | x <- [1..6]]
 
 > permutations a = p a 0 $ product [2..(length a)]
