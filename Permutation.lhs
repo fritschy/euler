@@ -48,24 +48,25 @@ easy to grasp. It can thus be useful to know even for those not interested
 in combinatorics.
 
 > next_permutation :: Ord a => [a] -> [a]
-> next_permutation = check >.> ini >.> split >.> swap >.> rev >.> cat
+> next_permutation = cat . rev . swap . split . ini . check
 >   where check [] = error "next_permutation: [] invalid"
 >         check a = a
->         ini a = (init a, [last a])
+>         ini a = (tail ra, [head ra])
+>           where ra = reverse a
 >         split (a, b)
->           | null a || last a < head b = (a, b)
->           | otherwise                 = split (init a, last a : b)
->         swap (a, b)
->           | otherwise        = swap2 (a, b, (length b)-1)
+>           | null a || head a < head b = (a, b)
+>           | otherwise                 = split (tail a, head a : b)
+>         swap (a, b) = swap2 (a, b, (length b)-1)
 >           where swap2 (a, b, m)
->                   | last a < b!!m   = (init a ++ [b!!m],
->                                         (fst $ splitAt m b) ++
->                                           last a :
->                                             (tail . snd $ splitAt m b))
->                   | otherwise       = swap2 (a, b, m-1)
->         rev (a, b) = (a, reverse b)
+>                   | head a < bm = (bm : tail a,
+>                                     (fst sb) ++
+>                                       head a :
+>                                         (tail $ snd sb))
+>                   | otherwise   = swap2 (a, b, m-1)
+>                   where sb = splitAt m b
+>                         bm = b!!m
+>         rev (a, b) = (reverse a, reverse b)
 >         cat (a, b) = a ++ b
->         (>.>) = flip (.)
 
 >-- let p = permutations in and $ map (\x->x == sort x) [p [1..x] | x <- [1..6]]
 
