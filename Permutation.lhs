@@ -49,24 +49,23 @@ in combinatorics.
 
 > next_permutation :: Ord a => [a] -> [a]
 > next_permutation = cat . rev . swap . split . ini . check
->   where check [] = error "next_permutation: [] invalid"
->         check a = a
->         ini a = (tail ra, [head ra])
->           where ra = reverse a
->         split (a, b)
->           | null a || head a < head b = (a, b)
->           | otherwise                 = split (tail a, head a : b)
->         swap (a, b) = swap2 (a, b, (length b)-1)
->           where swap2 (a, b, m)
->                   | head a < bm = (bm : tail a,
->                                     (fst sb) ++
->                                       head a :
->                                         (tail $ snd sb))
->                   | otherwise   = swap2 (a, b, m-1)
->                   where sb = splitAt m b
->                         bm = b!!m
->         rev (a, b) = (reverse a, reverse b)
->         cat (a, b) = a ++ b
+> check [] = error "next_permutation: [] invalid"
+> check a = reverse a
+> ini a = (tail a, [head a])
+> split (a, b)
+>   | null a || head a < head b = (a, b)
+>   | otherwise                 = split (tail a, head a : b)
+> swap (a, b) = swap2 (a, b, (length b)-1)
+>   where swap2 (a, b, m)
+>           | head a < bm = (bm : tail a,
+>                             (fst sb) ++
+>                               head a :
+>                                 (tail $ snd sb))
+>           | otherwise   = swap2 (a, b, m-1)
+>           where sb = splitAt m b
+>                 bm = b!!m
+> rev (a, b) = (b, a)
+> cat (a, b) = reverse $ a ++ b
 
 >-- let p = permutations in and $ map (\x->x == sort x) [p [1..x] | x <- [1..6]]
 
