@@ -77,9 +77,8 @@ only switches a and b, such that they can be concatenated as "expected".
 Still, that monster takes >80 seconds for the 1e6 permutation of a 10-len
 sequence - which is too long.
 
->-- let p = permutations in and $ map (\x->x == sort x) [p [1..x] | x <- [1..6]]
+Some test:
+let p = permutations in and $ map (\x->x == sort x) [p [1..x] | x <- [1..6]]
 
-> permutations a = p a 0 $ product [2..(length a)]
->   where p a c n
->           | c == n    = []
->           | otherwise = a : p (next_permutation a) (c+1) n
+> permutations a = take (product [2..(length a)]) $ iterate' next_permutation a
+>                  where iterate' f x = x : (iterate' f $! f x)
