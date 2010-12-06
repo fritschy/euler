@@ -84,10 +84,9 @@ digitsOfNumber = map digitToInt . show
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
 -- list is sorted beforehand
 uniq :: Eq a => [a] -> [a]
+uniq (x:xs@(y:_)) = if x == y then uniq xs else x : uniq xs
+uniq (x:[]) = [x]
 uniq [] = []
-uniq (x:xs)
-  | not (null xs) = if x == head xs then uniq xs else x : uniq xs
-  | otherwise     = [x]
 
 sortUniq :: Ord a => [a] -> [a]
 sortUniq = uniq . sort
