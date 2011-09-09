@@ -1,7 +1,8 @@
 module Fibonacci(
   fibs0,
   fibs,
-  fibWords
+  fibWords,
+  fib
   ) where
 
 import Control.Monad.Fix -- works with hugs and ghc (hugs doesn't know Data.Function)
@@ -19,3 +20,8 @@ fibWords a b = fix ((a:) . (scanl (flip (++)) b))
 fibs, fibs0 :: Integral a => [a]
 fibs = f 0 1 where f a b = b:f b (a + b)
 fibs0 = 0:fibs
+
+fib :: Integral a => Int -> a
+fib n = f n 0 1
+        where f 0 a _ = a
+              f n a b = f (n-1) b (a+b)
