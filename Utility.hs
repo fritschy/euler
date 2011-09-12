@@ -13,6 +13,7 @@ module Utility (
   wordSum,              -- (String -> Int)
   notSolved,            -- IO ()
   notRunnable,          -- IO ()
+  l10,                  -- Integral a => a -> Int
   IntegralClass(..)
   ) where
 
@@ -20,6 +21,9 @@ import Data.Char
 import Data.List
 import Array
 import qualified Data.Set as Set
+
+l10 :: Integral a => a -> Int
+l10 = truncate . logBase 10 . fromIntegral
 
 notSolved, notRunnable :: IO ()
 notSolved = putStr "This problem is not solved yet."
