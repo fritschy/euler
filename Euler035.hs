@@ -8,8 +8,4 @@ euler035 = putNum . length . filter cprime . filter noEven $ takeWhile (< 100000
 cprime n = and [isPrime . read $ rot sn x | x <- [0..length sn]]
            where sn = show n
 
-rot l n = a ++ b
-          where (b,a) = splitAt n l
-
--- a little faster, but complex...
---rot (x:xs) n = if n == 0 then x:xs else rot (xs ++ [x]) (n-1)
+rot l n = drop n l ++ take n l
