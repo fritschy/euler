@@ -37,11 +37,12 @@ blockValid = noDoubles . sort . filter (/= Nothing)
                    noDoubles _        = True
 
 blocks :: Sudoku -> [Block]
-blocks s = rs ++ transpose rs ++ [b r c 0 0 | r <- [0,3,6], c <- [0,3,6]]
+blocks s = rs ++ transpose rs ++ [b r c 0 0 | r <- ots, c <- ots]
            where b _ _ 3 _ = []
                  b r c y 3 = b r c (y+1) 0
                  b r c y x = (rs!!(r+y)!!(c+x)) : b r c y (x+1)
                  rs        = rows s
+                 ots       = [0,3,6]
 
 valid :: Sudoku -> Bool
 valid = and . map blockValid . blocks
@@ -85,12 +86,10 @@ apply :: Int -> (a -> a) -> a -> a
 apply 0 f s = s
 apply n f s = apply (n-1) f $ f s
 
-solve :: Sudoku -> Maybe [Sudoku]
+solve :: Sudoku -> [Sudoku]
 solve s = if not (isSudoku s) || not (valid s)
-            then Nothing
-            else case backtrack (apply 5 eliminateSingles s) [] of
-              xs@(_:_) -> Just xs
-              _        -> Nothing
+            then []
+            else backtrack (apply 5 eliminateSingles s) []
 
 backtrack :: Sudoku -> [Sudoku] -> [Sudoku]
 backtrack s acc = if null bs
