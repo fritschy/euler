@@ -6,12 +6,13 @@ import Data.List
 import Data.Maybe
 import Debug.Trace
 
-import Control.Parallel
+import Control.Parallel.Strategies
 
 import Sudoku
 
+euler096 :: IO()
 euler096 = do buf <- readFile "data/sudoku.txt"
-              putNum . sum . map (mkInt . head . toList . head . solve . fromList) . mkSudokus $ lines buf
+              putNum . sum . parMap rwhnf (mkInt . head . toList . head . solve . fromList) . mkSudokus $ lines buf
               where mkInt (x:y:z:_) = x*100 + y*10 + z
 
 mkSudokus x
