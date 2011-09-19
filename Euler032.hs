@@ -3,7 +3,8 @@ module Euler032 where
 import Utility
 import Permutation
 
-euler032 = putNum . sum . sortUniq . map (\(a,b,c)->c) $ pandigitals
+euler032 :: IO()
+euler032 = putNum . sum . sortUniq . map (\(_,_,c)->c) $ pandigitals
 
 pandigitals = filter (\(a,b,c)->a*b==c) . concat . map (split1 . read) $ permutations "123456789"
 
