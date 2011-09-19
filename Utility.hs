@@ -16,6 +16,7 @@ module Utility (
   pentagonals,          -- Integral a => [a]
   pentagonal,           -- Integral a => a -> a
   l10,                  -- Integral a => a -> Int
+  divides,              -- Integral a => a -> a -> Bool
   IntegralClass(..)
   ) where
 
@@ -26,6 +27,9 @@ import qualified Data.Set as Set
 
 l10 :: Integral a => a -> Int
 l10 = truncate . logBase 10 . fromIntegral
+
+divides :: Integral a => a -> a -> Bool
+divides n d = d `mod` n == 0
 
 notSolved, notRunnable :: IO ()
 notSolved = putStr "This problem is not solved yet."
