@@ -17,6 +17,7 @@ module Utility (
   pentagonal,           -- Integral a => a -> a
   l10,                  -- Integral a => a -> Int
   divides,              -- Integral a => a -> a -> Bool
+  isPandigital,         -- Integral a => a -> Bool
   IntegralClass(..)
   ) where
 
@@ -30,6 +31,9 @@ l10 = truncate . logBase 10 . fromIntegral
 
 divides :: Integral a => a -> a -> Bool
 divides n d = d `mod` n == 0
+
+isPandigital :: Integral a => a -> Bool
+isPandigital = (\x->[1..length x] == (map digitToInt $ sort x)) . show
 
 notSolved, notRunnable :: IO ()
 notSolved = putStr "This problem is not solved yet."
