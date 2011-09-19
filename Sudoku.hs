@@ -3,36 +3,34 @@ module Sudoku where
 import Data.List
 import Data.Char
 
-data Sudoku = Sudoku { rows :: [[Maybe Int]] } deriving (Eq)
+data Sudoku = Sudoku { rows :: [[Int]] } deriving (Eq)
 
 instance Show Sudoku where
-  show = unlines . map (map unWrap) . rows
-         where unWrap (Just x) = intToDigit x
-               unWrap _        = '.'
+  show = unlines . map (map intToDigit) . rows
 
 readSudoku :: String -> Sudoku
 readSudoku str = if not (isSudoku s) || not (valid s)
                    then error "Not a sudoku!"
                    else s
-                 where wrap x = if x `elem` "0.- " then Nothing else Just $ digitToInt x
+                 where wrap x = if x `elem` ".- " then 0 else digitToInt x
                        s      = Sudoku . map (map wrap) $ lines str
 
 fromList :: [[Int]] -> Sudoku
-fromList = Sudoku . map (map (\x->if x == 0 then Nothing else Just x))
+fromList = Sudoku
 
 toList :: Sudoku -> [[Int]]
-toList = map (map (\x->case x of Nothing -> 0; (Just y) -> y)) . rows
+toList = rows
 
 isSudoku :: Sudoku -> Bool
 isSudoku = all ((== 9) . length) . rows
 
 isSolved :: Sudoku -> Bool
-isSolved = all (all (/= Nothing)) . rows
+isSolved = all (all (/= 0)) . rows
 
-type Block = [Maybe Int]
+type Block = [Int]
 
 blockValid :: Block -> Bool
-blockValid = noDoubles . sort . filter (/= Nothing)
+blockValid = noDoubles . sort . filter (/= 0)
              where noDoubles (x:y:xs) = if x /= y then noDoubles (y:xs) else False
                    noDoubles _        = True
 
@@ -51,27 +49,25 @@ type Pos = (Int, Int)
 
 blanks :: Sudoku -> [Pos]
 blanks = b 0 . concat . rows
-         where b c (Nothing:xs) = divMod c 9 : b (c+1) xs
-               b c (_:xs)       = b (c+1) xs
-               b c _            = []
+         where b c (0:xs) = divMod c 9 : b (c+1) xs
+               b c (_:xs) = b (c+1) xs
+               b c _      = []
 
 (!!=) :: [a] -> (Int, a) -> [a]
 (!!=) = flip u
         where u (i, e) = map (\(y,x) -> if y == i then e else x) . zip [0..]
 
 update :: Sudoku -> Pos -> Int -> Sudoku
-update s (r, c) e = Sudoku . map (\(y,x)->if y == r then x !!= (c, Just e) else x) . zip [0..] $ rows s
+update s (r, c) e = Sudoku . map (\(y,x)->if y == r then x !!= (c, e) else x) . zip [0..] $ rows s
 
 candidates :: Sudoku -> Pos -> [Int]
 candidates = flip cand
-             where cand (r, c) s = if rows s!!r!!c /= Nothing then []
-                                     else [1..9] \\ map unwrap (rs ++ cs ++ bs)
+             where cand (r, c) s = if rows s!!r!!c /= 0 then []
+                                     else [1..9] \\ (rs ++ cs ++ bs)
                                    where b  = blocks s
                                          rs = b !! r
                                          cs = drop 9 b !! c
                                          bs = drop 18 b !! ((r `div` 3) * 3 + c `div` 3)
-                                         unwrap (Just x) = x
-                                         unwrap _        = 0
 
 eliminateSingles s = if null singles then s
                      else es s singles
