@@ -1,7 +1,7 @@
 module Euler032 where
 
+import Data.List
 import Utility
-import Permutation
 
 euler032 :: IO()
 euler032 = putNum . sum . sortUniq . map (\(_,_,c)->c) $ pandigitals
