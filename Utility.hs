@@ -18,6 +18,7 @@ module Utility (
   l10,                  -- Integral a => a -> Int
   divides,              -- Integral a => a -> a -> Bool
   isPandigital,         -- Integral a => a -> Bool
+  over,                 -- Integral a => a -> a -> a
   IntegralClass(..)
   ) where
 
@@ -25,6 +26,9 @@ import Data.Char
 import Data.List
 import Array
 import qualified Data.Set as Set
+
+over n r = f n `div` (f r * f (n - r))
+           where f x = if x > 0 then x * f (x-1) else 1
 
 l10 :: Integral a => a -> Int
 l10 = truncate . logBase 10 . fromIntegral
