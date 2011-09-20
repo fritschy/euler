@@ -19,6 +19,7 @@ module Utility (
   divides,              -- Integral a => a -> a -> Bool
   isPandigital,         -- Integral a => a -> Bool
   over,                 -- Integral a => a -> a -> a
+  (!!=),                -- [a] -> (Int, a) -> [a]
   IntegralClass(..)
   ) where
 
@@ -30,8 +31,13 @@ import qualified Data.Set as Set
 over n r = f n `div` (f r * f (n - r))
            where f x = if x > 0 then x * f (x-1) else 1
 
+-- Update list item at index p with e
+(!!=) :: [a] -> (Int, a) -> [a]
+(!!=) (x:xs) (p, e) = if p == 0 then e:xs else x:(xs !!= (p-1, e))
+(!!=) _      _      = []
+
 l10 :: Integral a => a -> Int
-l10 = truncate . logBase 10 . fromIntegral
+l10 x = l x 0 where l x a = if x > 0 then l (x `div` 10) (a+1) else a
 
 divides :: Integral a => a -> a -> Bool
 divides n d = d `mod` n == 0
