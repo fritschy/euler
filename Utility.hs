@@ -31,7 +31,7 @@ over n r = f n `div` (f r * f (n - r))
            where f x = if x > 0 then x * f (x-1) else 1
 
 l10 :: Integral a => a -> Int
-l10 = truncate . logBase 10 . fromIntegral
+l10 x = l x 0 where l x a = if x > 0 then l (x `div` 10) (a + 1) else a
 
 divides :: Integral a => a -> a -> Bool
 divides n d = d `mod` n == 0

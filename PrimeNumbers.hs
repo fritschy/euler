@@ -5,6 +5,7 @@ module PrimeNumbers (
   primeFactors          -- Integral a => a -> [a]
   ) where
 
+import Utility
 import Data.Bits
 
 sieve :: Integral a => [a]
