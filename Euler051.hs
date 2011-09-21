@@ -5,16 +5,15 @@ import PrimeNumbers
 import Data.List
 import Data.Char
 
---euler051 = putStr . show . take 100 . filter (\(p,c,x)->length x == 8) . foldr (++) [] $ foldr (++) [] work
+euler051 = putNum . head . snd . head . snd . head $ filter (not . null . snd) work
 
-for = flip map
+work = map replaceSome $ dropWhile (<56003) primes
 
-work = map replaceSome $ filter (>90000) primes
-
---filters = sortUniq . filter ((==length sp) . length . show . (id::Integer->Integer) . read)
-
---replaceSome p = [[(p, xcl, filter (\x->isPrime x && l10 x == lsp) [read $ map (\(p,c)->if p `elem` xcl then intToDigit n else c) $ zip [0..] sp | n<-[0..9]]) | xcl<-cl mlen] | mlen<-[1..length sp - 1]]
-replaceSome p = (p, [xcl | mlen<-[1..lsp - 1], xcl<-cl mlen]) -- replcae-index-list for each prime
+replaceSome p = (p, filter ((==8) . length . snd) . map (\x->(x, anyValid p x)) $ concat [cl mlen | mlen<-[1..lsp - 1]])
                 where sp = show p
-                      cl mlen = sortBy (flip compare) . sortUniq . map (sort . drop 1) $ permutations [0..mlen] -- select uniq replace-index-list
+                      cl mlen = filter ((==mlen - 1) . length) $ subsequences [0..mlen]
                       lsp = l10 p
+
+anyValid p cs = filter (\x->l10 x == l10 p && isPrime x) $ map rcs [0..9]
+                where rcs i = read $ map (\(x, e)->if x `elem` cs then intToDigit i else e) sp
+                      sp = zip [0..] $ show p
