@@ -7,7 +7,11 @@ import Control.Monad
 import Data.Maybe
 import Data.Char
 
-data Suit = Sp | He | Di | Cl deriving (Show, Eq)
+data Suit = Spades
+          | Hearts
+          | Diamonds
+          | Clubs
+          deriving (Show, Eq)
 
 type CardVal = Int
 
@@ -17,50 +21,175 @@ data Card = Card { value :: CardVal
 instance Ord Card where
   compare a b = value a `compare` value b
 
+type Cards = [Card]
+
 toCardVal :: Char -> Int
 toCardVal = fromJust . flip lookup (zip "23456789TJQKA" [2..])
 
 toSuit :: Char -> Suit
-toSuit 'S' = Sp
-toSuit 'H' = He
-toSuit 'D' = Di
-toSuit 'C' = Cl
+toSuit 'S' = Spades
+toSuit 'H' = Hearts
+toSuit 'D' = Diamonds
+toSuit 'C' = Clubs
 
 toCard :: String -> Card
 toCard (v:s:_) = Card (toCardVal v) (toSuit s)
+toCard _       = undefined
 
-data Hand = Hand { cards :: [Card] } deriving (Show, Eq)
+data Hand = Hand { rank  :: Rank
+                 , cards :: Cards
+                 } deriving (Show, Eq)
 
 instance Ord Hand where
   compare = compareHands
 
+toHand :: Cards -> Hand
+toHand cs = Hand (toRank scs) (reverse scs) where scs = sort cs
+
+data Rank = HighCard
+          | OnePair CardVal
+          | TwoPairs (CardVal,CardVal)
+          | ThreeOfAKind CardVal
+          | Straight CardVal -- Straight beginning at CardVal
+          | Flush Suit
+          | FullHouse (CardVal,CardVal) -- 3ofAKind+Pair
+          | FourOfAKind CardVal
+          | StraightFlush CardVal
+          | RoyalFlush
+          deriving (Show, Eq)
+
+cmp2 a b c d = case compare a b of
+                 EQ -> compare c d
+                 GT -> GT
+                 LT -> LT
+
+instance Ord Rank where
+  compare = compareRank
+
+compareRank RoyalFlush RoyalFlush               = EQ
+compareRank RoyalFlush _                        = GT
+compareRank _ RoyalFlush                        = LT
+
+compareRank (StraightFlush a) (StraightFlush b) = compare a b
+compareRank (StraightFlush _) _                 = GT
+compareRank _ (StraightFlush _)                 = LT
+
+compareRank (FourOfAKind a) (FourOfAKind b)     = compare a b
+compareRank (FourOfAKind _) _                   = GT
+compareRank _ (FourOfAKind _)                   = LT
+
+compareRank (FullHouse a) (FullHouse b)         = compare a b
+compareRank (FullHouse _) _                     = GT
+compareRank _ (FullHouse _)                     = LT
+
+compareRank (Flush _) (Flush _)                 = EQ
+compareRank (Flush _) _                         = GT
+compareRank _ (Flush _)                         = LT
+
+compareRank (Straight a) (Straight b)           = compare a b
+compareRank (Straight _) _                      = GT
+compareRank _ (Straight _)                      = LT
+
+compareRank (ThreeOfAKind a) (ThreeOfAKind b)   = compare a b
+compareRank (ThreeOfAKind _) _                  = GT
+compareRank _ (ThreeOfAKind _)                  = LT
+
+compareRank (TwoPairs a) (TwoPairs b)           = compare a b
+compareRank (TwoPairs _) _                      = GT
+compareRank _ (TwoPairs _)                      = LT
+
+compareRank (OnePair a) (OnePair b)             = compare a b
+compareRank (OnePair _) _                       = GT
+compareRank _ (OnePair _)                       = LT
+
+compareRank HighCard HighCard                   = EQ
+
+areSuccessive :: Cards -> Bool
+areSuccessive (Card x _:n@(Card y _):xs) = if x+1 == y then areSuccessive (n:xs) else False
+areSuccessive (x:_)                      = True
+
+sameSuit :: Cards -> Bool
+sameSuit (Card _ x:n@(Card _ y):xs) = if x == y then sameSuit (n:xs) else False
+sameSuit (x:_)                      = True
+
 compareHands :: Hand -> Hand -> Ordering
-compareHands = undefined
+compareHands (Hand ra ca) (Hand rb cb) = cmp2 ra rb ca cb
 
--- XXX need to take into account highest card for tie and also the value of the pairs!
-points :: Hand -> Int
-points h = if      isRoyalFlush h    then 1000
-           else if isStraightFlush h then  999
-           else if is4OfAKind h      then  998
-           else if isFullHouse h     then  997
-           else if isFlush h         then  996
-           else if isStraight h      then  995
-           else if is3OfAKind h      then  994
-           else if is2Pairs h        then  993
-           else if isPair h          then  991
-           else    value . head . sortBy (flip compare) $ cards h
+toRank :: Cards -> Rank
+toRank h = fromJust . head . dropWhile isNothing $ map (\f->f sh) fs
+           where sh = sort h
+                 fs = [ isRoyalFlush
+                      , isStraightFlush
+                      , isFourOfAKind
+                      , isFullHouse
+                      , isFlush
+                      , isStraight
+                      , isThreeOfAKind
+                      , isTwoPairs
+                      , isOnePair
+                      , (\_->Just HighCard) ]
 
--- all :: Hand -> Bool
-isRoyalFlush h = undefined
-isStraightFlush h = undefined
-is4OfAKind h = undefined
-isFullHouse h = undefined
-isFlush h = undefined
-isStraight h = undefined
-is3OfAKind h = undefined
-is2Pairs h = undefined
-isPair h = undefined
+isOnePair, isTwoPairs, isThreeOfAKind, isStraight, isFlush, isFullHouse,
+  isFourOfAKind, isStraightFlush, isRoyalFlush :: Cards -> Maybe Rank
+
+isOnePair h = i $ sort h
+  where i (Card x _:n@(Card y _):xs) =
+          if x == y
+            then Just $ OnePair x
+            else i (n:xs)
+        i (x:_) = Nothing
+
+isTwoPairs h = i [] $ sort h
+  where i a (Card x _:n@(Card y _):xs) =
+          if x == y then i (x:a) xs else i a (n:xs)
+        i (x:y:_) _ =
+          if x /= y
+            then Just $ TwoPairs (x,y)
+            else Nothing
+        i a _ = Nothing
+
+isThreeOfAKind h = i $ sort h
+  where i (Card x _:n@(Card y _):m@(Card z _):xs) =
+          if x == y && y == z
+            then Just $ ThreeOfAKind x
+            else i (n:m:xs)
+        i (x:_) = Nothing
+
+isStraight h = if areSuccessive h
+                 then Just (Straight (value $ head h))
+                 else Nothing
+
+isFlush h = if sameSuit h
+              then Just $ Flush (suit $ head h)
+              else Nothing
+
+isFullHouse h = case sort h of
+  (Card a _:Card b _:Card c _:Card d _:Card e _:_) ->
+    if      a == b && b == c && d == e then Just $ FullHouse (a, d)
+    else if a == b && c == d && d == e then Just $ FullHouse (c, a)
+    else Nothing
+  _ -> Nothing
+
+isFourOfAKind h = case sort h of
+  (Card a _:Card b _:Card c _:Card d _:Card e _:_) ->
+    if      a == b && b == c && c == d then Just $ FourOfAKind a
+    else if b == c && c == d && d == e then Just $ FourOfAKind b
+    else Nothing
+  _ -> Nothing
+
+isStraightFlush h = if areSuccessive cs && sameSuit cs
+                      then Just $ (StraightFlush . value $ head cs)
+                      else Nothing
+                    where cs = sort h
+
+isRoyalFlush h = if areSuccessive cs && sameSuit cs && value hc == 10
+                   then Just RoyalFlush
+                   else Nothing
+                 where cs = sort h
+                       hc = head cs
 
 euler054 = withFile "data/poker.txt" ReadMode $ \h -> do
-             hands <- map ((\(a,b)->(Hand a, Hand b)) . splitAt 5 . map toCard . words) `liftM` lines `liftM` hGetContents h
-             putStr $ show $ head hands
+             hands <- makeHands `liftM` hGetContents h
+             putNum . length $ filter (\(a,b)->a > b) hands
+
+makeHands = map ((\(a,b)->(toHand a, toHand b)) . splitAt 5 . map toCard . words) . lines
