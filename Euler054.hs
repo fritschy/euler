@@ -58,15 +58,11 @@ data Rank = HighCard
           | RoyalFlush
           deriving (Show, Eq)
 
-cmp2 a b c d = case compare a b of
-                 EQ -> compare c d
-                 GT -> GT
-                 LT -> LT
-
 instance Ord Rank where
   compare = compareRank
 
-compareRank RoyalFlush RoyalFlush               = EQ
+compareRank :: Rank -> Rank -> Ordering
+
 compareRank RoyalFlush _                        = GT
 compareRank _ RoyalFlush                        = LT
 
@@ -82,7 +78,6 @@ compareRank (FullHouse a) (FullHouse b)         = compare a b
 compareRank (FullHouse _) _                     = GT
 compareRank _ (FullHouse _)                     = LT
 
-compareRank (Flush _) (Flush _)                 = EQ
 compareRank (Flush _) _                         = GT
 compareRank _ (Flush _)                         = LT
 
@@ -102,7 +97,7 @@ compareRank (OnePair a) (OnePair b)             = compare a b
 compareRank (OnePair _) _                       = GT
 compareRank _ (OnePair _)                       = LT
 
-compareRank HighCard HighCard                   = EQ
+compareRank _ _                                 = EQ
 
 areSuccessive :: Cards -> Bool
 areSuccessive (Card x _:n@(Card y _):xs) = if x+1 == y then areSuccessive (n:xs) else False
@@ -113,12 +108,13 @@ sameSuit (Card _ x:n@(Card _ y):xs) = if x == y then sameSuit (n:xs) else False
 sameSuit (x:_)                      = True
 
 compareHands :: Hand -> Hand -> Ordering
-compareHands (Hand ra ca) (Hand rb cb) = cmp2 ra rb ca cb
+compareHands (Hand ra ca) (Hand rb cb) = case compare ra rb of
+                                           EQ -> compare ca cb
+                                           x  -> x
 
 toRank :: Cards -> Rank
-toRank h = fromJust . head . dropWhile isNothing $ map (\f->f sh) fs
-           where sh = sort h
-                 fs = [ isRoyalFlush
+toRank h = fromJust . head . dropWhile isNothing $ map (\f->f h) fs
+           where fs = [ isRoyalFlush
                       , isStraightFlush
                       , isFourOfAKind
                       , isFullHouse
@@ -132,14 +128,14 @@ toRank h = fromJust . head . dropWhile isNothing $ map (\f->f sh) fs
 isOnePair, isTwoPairs, isThreeOfAKind, isStraight, isFlush, isFullHouse,
   isFourOfAKind, isStraightFlush, isRoyalFlush :: Cards -> Maybe Rank
 
-isOnePair h = i $ sort h
+isOnePair h = i h
   where i (Card x _:n@(Card y _):xs) =
           if x == y
             then Just $ OnePair x
             else i (n:xs)
         i (x:_) = Nothing
 
-isTwoPairs h = i [] $ sort h
+isTwoPairs h = i [] h
   where i a (Card x _:n@(Card y _):xs) =
           if x == y then i (x:a) xs else i a (n:xs)
         i (x:y:_) _ =
@@ -148,7 +144,7 @@ isTwoPairs h = i [] $ sort h
             else Nothing
         i a _ = Nothing
 
-isThreeOfAKind h = i $ sort h
+isThreeOfAKind h = i h
   where i (Card x _:n@(Card y _):m@(Card z _):xs) =
           if x == y && y == z
             then Just $ ThreeOfAKind x
@@ -163,33 +159,35 @@ isFlush h = if sameSuit h
               then Just $ Flush (suit $ head h)
               else Nothing
 
-isFullHouse h = case sort h of
+isFullHouse h = case h of
   (Card a _:Card b _:Card c _:Card d _:Card e _:_) ->
     if      a == b && b == c && d == e then Just $ FullHouse (a, d)
     else if a == b && c == d && d == e then Just $ FullHouse (c, a)
     else Nothing
   _ -> Nothing
 
-isFourOfAKind h = case sort h of
+isFourOfAKind h = case h of
   (Card a _:Card b _:Card c _:Card d _:Card e _:_) ->
     if      a == b && b == c && c == d then Just $ FourOfAKind a
     else if b == c && c == d && d == e then Just $ FourOfAKind b
     else Nothing
   _ -> Nothing
 
-isStraightFlush h = if areSuccessive cs && sameSuit cs
-                      then Just $ (StraightFlush . value $ head cs)
+isStraightFlush h = if areSuccessive h && sameSuit h
+                      then Just (StraightFlush $ value hc)
                       else Nothing
-                    where cs = sort h
+                    where hc = head h
 
-isRoyalFlush h = if areSuccessive cs && sameSuit cs && value hc == 10
+isRoyalFlush h = if areSuccessive h && sameSuit h && value hc == 10
                    then Just RoyalFlush
                    else Nothing
-                 where cs = sort h
-                       hc = head cs
+                 where hc = head h
 
-euler054 = withFile "data/poker.txt" ReadMode $ \h -> do
-             hands <- makeHands `liftM` hGetContents h
-             putNum . length $ filter (\(a,b)->a > b) hands
+euler054 = do hands <- makeHands `liftM` readFile "data/poker.txt"
+              putNum . length $ filter (\(a,b)->a > b) hands
 
-makeHands = map ((\(a,b)->(toHand a, toHand b)) . splitAt 5 . map toCard . words) . lines
+makeHands :: String -> [(Hand, Hand)]
+makeHands = map makeHand . lines
+
+makeHand :: String -> (Hand, Hand)
+makeHand = (\(a,b)->(toHand a, toHand b)) . splitAt 5 . map toCard . words
