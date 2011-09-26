@@ -13,8 +13,6 @@ module Utility (
   wordSum,              -- (String -> Int)
   notSolved,            -- IO ()
   notRunnable,          -- IO ()
-  pentagonals,          -- Integral a => [a]
-  pentagonal,           -- Integral a => a -> a
   l10,                  -- Integral a => a -> Int
   divides,              -- Integral a => a -> a -> Bool
   isPandigital,         -- Integral a => a -> Bool
@@ -61,12 +59,6 @@ getWords file = do words' <- readFile file
 
 putNum :: Num a => a -> IO ()
 putNum = putStr . show
-
-pentagonal :: Integral a => a -> a
-pentagonal n = n*(3*n-1) `div` 2
-
-pentagonals :: Integral a => [a]
-pentagonals = map pentagonal [1..]
 
 data IntegralClass = Deficient | Perfect | Abundant
      deriving (Eq)
