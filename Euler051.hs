@@ -5,7 +5,13 @@ import PrimeNumbers
 import Data.List
 import Data.Char
 
-euler051 = putNum . head . snd . head . snd . head $ filter (not . null . snd) work
+euler051 = putNum
+         . head
+         . snd
+         . head
+         . snd
+         . head
+         $ filter (not . null . snd) work
 
 work = map replaceSome $ dropWhile (<56003) primes
 
