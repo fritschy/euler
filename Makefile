@@ -1,11 +1,14 @@
+GHCOPTS = -rtsopts=all -fllvm -threaded
+OPTIMIZE = -O3
+
 all: Main.hs
-	ghc -O -rtsopts=all -optc-march=native -optc-O3 -threaded --make Main.hs
+	ghc $(GHCOPTS) $(OPTIMIZE) --make Main.hs
 
 prof: Main.hs
-	ghc -O -rtsopts=all -prof -auto-all -optc-march=native -optc-O3 -threaded --make Main.hs
+	ghc $(GHCOPTS) $(OPTIMIZE) -prof -auto-all --make Main.hs
 
 noopt: Main.hs
-	ghc -rtsopts=all -optc-march=native -optc-O3 -threaded --make Main.hs
+	ghc $(GHCOPTS) --make Main.hs
 
 main: Main.hs
 
