@@ -1,3 +1,5 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
+
 module Utility (
   digitsOfNumber,       -- Integral a => a -> [Int]
   uniq,                 -- Eq a => [a] -> [a]
@@ -21,9 +23,10 @@ module Utility (
   IntegralClass(..)
   ) where
 
+import Prelude
 import Data.Char
 import Data.List
-import Array
+import Data.Array
 import qualified Data.Set as Set
 
 over n r = f n `div` (f r * f (n - r))
@@ -40,7 +43,7 @@ l10 x = l x 0 where l x a = if x > 0 then l (x `div` 10) (a + 1) else a
 divides :: Integral a => a -> a -> Bool
 divides n d = d `mod` n == 0
 
-isPandigital :: Integral a => a -> Bool
+--isPandigital :: Integral a => a -> Bool
 isPandigital = (\x->[1..length x] == (map digitToInt $ sort x)) . show
 
 notSolved, notRunnable :: IO ()
@@ -57,7 +60,7 @@ getWords file = do words' <- readFile file
                          splitWords xs = word : splitWords (drop (1 + length word) xs)
                                          where word = takeWhile (/= ',') xs
 
-putNum :: Num a => a -> IO ()
+--putNum :: Num a => a -> IO ()
 putNum = putStr . show
 
 data IntegralClass = Deficient | Perfect | Abundant
@@ -100,7 +103,7 @@ divisors n = (fst pairs) ++ (sort . wosqr $ snd pairs)
                               (m,(dim,mom)) <- zip [1..] $ map (divMod n)
                                 [1..truncate(sqrt(fromIntegral n))], 0==mom]
 
-digitsOfNumber :: Integral a => a -> [Int]
+--digitsOfNumber :: Integral a => a -> [Int]
 digitsOfNumber = map digitToInt . show
 
 -- remove adjacent duplicate elements, i.e. only usefull when zthe
@@ -144,7 +147,7 @@ teens n
                          where chars = array (0,9) [(0, "ten"), (1, "eleven"), (2, "twelve"), (3, "thirteen"), (4, "fourteen"),
                                                     (5, "fifteen"), (6, "sixteen"), (7, "seventeen"), (8, "eighteen"), (9, "nineteen")]
 
-showLiteralNumber :: Integral a => a -> String
+--showLiteralNumber :: Integral a => a -> String
 showLiteralNumber n
   | n == 0                 = []
   | n >= 1000 && n <= 9999 = ((oneToNine (head digits)) ++ " thousand ") ++ showLiteralNumber (next 1)
