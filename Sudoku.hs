@@ -3,7 +3,9 @@ module Sudoku where
 import Data.List
 import Data.Char
 
-data Sudoku = Sudoku { rows :: [[Int]] } deriving (Eq)
+type Block = [Int]
+
+data Sudoku = Sudoku { rows :: [Block] } deriving (Eq)
 
 instance Show Sudoku where
   show = unlines . map (map intToDigit) . rows
@@ -27,15 +29,13 @@ isSudoku = all ((== 9) . length) . rows
 isSolved :: Sudoku -> Bool
 isSolved = all (all (/= 0)) . rows
 
-type Block = [Int]
-
 blockValid :: Block -> Bool
 blockValid = noDoubles . sort . filter (/= 0)
              where noDoubles (x:y:xs) = if x /= y then noDoubles (y:xs) else False
                    noDoubles _        = True
 
-blocks :: Sudoku -> [Block]
-blocks s = rs ++ transpose rs ++ [b r c 0 0 | r <- ots, c <- ots]
+blocks :: Sudoku -> ([Block], [Block], [Block])
+blocks s = (rs, transpose rs, [b r c 0 0 | r <- ots, c <- ots])
            where b _ _ 3 _ = []
                  b r c y 3 = b r c (y+1) 0
                  b r c y x = (rs!!(r+y)!!(c+x)) : b r c y (x+1)
@@ -43,7 +43,9 @@ blocks s = rs ++ transpose rs ++ [b r c 0 0 | r <- ots, c <- ots]
                  ots       = [0,3,6]
 
 valid :: Sudoku -> Bool
-valid = and . map blockValid . blocks
+valid = allValid . blocks
+        where allValid (r, c, b) = v r && v c && v b
+              v                  = and . map blockValid
 
 type Pos = (Int, Int)
 
@@ -64,10 +66,10 @@ candidates :: Sudoku -> Pos -> [Int]
 candidates = flip cand
              where cand (r, c) s = if rows s!!r!!c /= 0 then []
                                      else [1..9] \\ (rs ++ cs ++ bs)
-                                   where b  = blocks s
-                                         rs = b !! r
-                                         cs = drop 9 b !! c
-                                         bs = drop 18 b !! ((r `div` 3) * 3 + c `div` 3)
+                                   where (br, bc, bb) = blocks s
+                                         rs = br !! r
+                                         cs = bc !! c
+                                         bs = bb !! ((r `div` 3) * 3 + c `div` 3)
 
 eliminateSingles s = if null singles then s
                      else es s singles
