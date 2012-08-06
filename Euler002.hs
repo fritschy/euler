@@ -3,5 +3,5 @@ import Fibonacci
 import Utility
 euler002 = putNum
          . sum
-         . takeWhile (<= 4000000)
-         $ filter even fibs
+         . filter even
+         $ takeWhile (<= 4000000) fibs
