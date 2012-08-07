@@ -15,7 +15,7 @@ isPrime :: Integral a => a -> Bool
 isPrime n
   | n == 2         = True
   | n `mod` 2 == 0 = False
-  | n >  2         = null [x | x <- [3,5 .. max], 0 == mod n x]
+  | n >  2         = null [1 | x <- [3,5 .. max], 0 == mod n x]
   | otherwise      = False
                      where max = 1 + factorLimit n
 

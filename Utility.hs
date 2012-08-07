@@ -12,6 +12,7 @@ module Utility (
   classify,             -- Integral a => a -> IntegralClass
   putNum,               -- Num a => a -> IO ()
   getWords,             -- String -> IO [String]
+  getWordsF,            -- (String -> String) -> String -> IO [String]
   wordSum,              -- (String -> Int)
   notSolved,            -- IO ()
   notRunnable,          -- IO ()
@@ -53,12 +54,15 @@ notRunnable = putStr "This problem solution is not runnable."
 wordSum :: String -> Int
 wordSum = sum . map ((1 +) . ((- ord 'A') +) . ord)
 
+getWordsF :: (String -> String) -> String -> IO [String]
+getWordsF f fi = do words' <- readFile fi
+                    return . map f $ splitWords words'
+                    where splitWords [] = []
+                          splitWords xs = word : splitWords (drop (1 + length word) xs)
+                                          where word = takeWhile (/= ',') xs
+
 getWords :: String -> IO [String]
-getWords file = do words' <- readFile file
-                   return . map (init . tail) $ splitWords words'
-                   where splitWords [] = []
-                         splitWords xs = word : splitWords (drop (1 + length word) xs)
-                                         where word = takeWhile (/= ',') xs
+getWords file = getWordsF (init . tail) file
 
 --putNum :: Num a => a -> IO ()
 putNum = putStr . show
